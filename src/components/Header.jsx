@@ -100,14 +100,6 @@ const Header = () => {
           )}
         </Flex>
       </Container>
-      {user && (
-        <ManageTags
-          user={user}
-          authLoading={authLoading}
-          isOpen={isOpen}
-          onClose={onClose}
-        />
-      )}
     </>
   );
 };
