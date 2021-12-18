@@ -100,7 +100,7 @@ const Header = () => {
           )}
         </Flex>
       </Container>
-      {user && <ManageTags user={user} isOpen={isOpen} onClose={onClose} />}
+      {user && <ManageTags isOpen={isOpen} onClose={onClose} />}
     </>
   );
 };

@@ -20,13 +20,16 @@ import { arrayUnion, collection, doc, updateDoc } from 'firebase/firestore';
 import { useCollection, useDocumentData } from 'react-firebase-hooks/firestore';
 import { db } from '../../firebase';
 import { CheckIcon } from '@chakra-ui/icons';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../../firebase';
 
 const createOption = (label) => ({
   label,
   value: label.toLowerCase().replace(/\W/g, ''),
 });
 
-const ManageTags = ({ user, onClose, isOpen, authLoading }) => {
+const ManageTags = ({ onClose, isOpen }) => {
+  const [user, authLoading] = useAuthState(auth);
   const [tagList, loading, error] = useDocumentData(doc(db, 'users', user.uid));
   const [notes, loadingNotes, notesError] = useCollection(
     collection(db, 'users', user.uid, 'notes')

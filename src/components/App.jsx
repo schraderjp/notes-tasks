@@ -18,9 +18,6 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../firebase';
 
 function App() {
-  const [user, authLoading, authErrors] = useAuthState(auth);
-  if (!user && authLoading) return <Spinner />;
-
   return (
     <>
       <Router>
