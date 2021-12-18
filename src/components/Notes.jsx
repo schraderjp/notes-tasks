@@ -109,6 +109,7 @@ const Notes = () => {
             leftIcon={<BiPlus />}
             p="2"
             marginInline="2"
+            fontFamily="Inter"
           >
             New
           </Button>
@@ -119,6 +120,7 @@ const Notes = () => {
             variant="ghost"
             leftIcon={<BsTags />}
             onClick={onOpen}
+            fontFamily="Inter"
           >
             Manage Tags
           </Button>
@@ -129,7 +131,7 @@ const Notes = () => {
               <Heading as="h2" d="flex">
                 <AccordionButton>
                   <Box flex="1" textAlign="left">
-                    <Text fontSize={['1.1rem', '1.3rem']}>
+                    <Text fontFamily="Inter" fontSize={['1.1rem', '1.3rem']}>
                       {note.title !== '' ? note.title : 'Untitled Note'}
                     </Text>
                   </Box>

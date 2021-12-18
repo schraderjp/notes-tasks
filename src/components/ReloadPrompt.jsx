@@ -1,5 +1,4 @@
 import React from 'react';
-import '../ReloadPrompt.css';
 import {
   Box,
   Button,
@@ -47,12 +46,17 @@ function ReloadPrompt() {
     <>
       {(offlineReady || needRefresh) && (
         <Alert
-          maxW="15rem"
+          maxW="max-content"
           size="sm"
           status="info"
           pos="fixed"
           bottom="1rem"
           right="1rem"
+          marginInline="3"
+          display="flex"
+          flexFlow="column"
+          alignItems="center"
+          justifyContent="center"
         >
           <AlertIcon />
           <AlertDescription p="2">

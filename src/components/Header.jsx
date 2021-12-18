@@ -59,7 +59,7 @@ const Header = () => {
       >
         {user && (
           <LinkBox>
-            <Heading pl="4" pt="2" fontSize="1.4rem" as="h1">
+            <Heading fontFamily="Inter" pl="4" pt="2" fontSize="1.4rem" as="h1">
               <LinkOverlay as={Link} to="/">
                 Notes App
               </LinkOverlay>

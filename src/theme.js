@@ -5,6 +5,15 @@ const config = {
   useSystemColorMode: false,
 };
 
-const theme = extendTheme({ config });
+const theme = extendTheme({
+  config,
+  styles: {
+    global: {
+      body: {
+        fontFamily: 'Inter',
+      },
+    },
+  },
+});
 
 export default theme;
