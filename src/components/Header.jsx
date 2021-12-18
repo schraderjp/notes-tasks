@@ -42,7 +42,6 @@ import {
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../firebase';
 import { signOut } from 'firebase/auth';
-import ManageTags from './ManageTags';
 
 const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
