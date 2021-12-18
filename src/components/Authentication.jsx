@@ -11,6 +11,7 @@ import {
   ModalCloseButton,
   useDisclosure,
   Spinner,
+  Heading,
 } from '@chakra-ui/react';
 import LogInForm from './LogInForm';
 import SignUpForm from './SignUpForm';
@@ -49,10 +50,14 @@ const Authentication = () => {
   return (
     <>
       <Flex align="center" justify="center" height="100%" flexFlow="column">
-        <Button onClick={openSignUpForm} colorScheme="blue" m="3">
+        <Heading pb="3" as="h1" fontSize="2.5rem">
+          Notes and Tasks
+        </Heading>
+        <Button size="lg" onClick={openSignUpForm} colorScheme="blue" m="3">
           Sign Up
         </Button>
         <Button
+          size="lg"
           onClick={openLogInForm}
           variant="outline"
           colorScheme="blue"

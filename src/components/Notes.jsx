@@ -12,13 +12,13 @@ import {
   AccordionPanel,
   AccordionIcon,
   Box,
-  Icon,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { useNavigate, Link } from 'react-router-dom';
 import { DeleteIcon, EditIcon, PlusSquareIcon } from '@chakra-ui/icons';
 import { format } from 'date-fns/esm';
 import DOMPurify from 'dompurify';
-import { BiPlus, BiPrinter } from 'react-icons/bi';
+import { BiPlus, BiPrinter, BiTag } from 'react-icons/bi';
 import PrintComponent from './PrintComponent';
 import { useEffect, useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
@@ -33,8 +33,11 @@ import {
 } from 'firebase/firestore';
 import { useDocument } from 'react-firebase-hooks/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { BsTags } from 'react-icons/bs';
+import ManageTags from './ManageTags';
 
 const Notes = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [user, authLoading, authErrors] = useAuthState(auth);
   const printRef = useRef();
   const [notes, setNotes] = useState(null);
@@ -104,8 +107,20 @@ const Notes = () => {
             variant="ghost"
             onClick={createNewNote}
             leftIcon={<BiPlus />}
+            p="2"
+            marginInline="2"
           >
             New
+          </Button>
+          <Button
+            marginInline="2"
+            p="2"
+            size="lg"
+            variant="ghost"
+            leftIcon={<BsTags />}
+            onClick={onOpen}
+          >
+            Manage Tags
           </Button>
         </Flex>
         {notes &&
@@ -175,6 +190,14 @@ const Notes = () => {
       <div style={{ display: 'none' }}>
         <PrintComponent ref={printRef} />
       </div>
+      {user !== null && (
+        <ManageTags
+          user={user}
+          authLoading={authLoading}
+          isOpen={isOpen}
+          onClose={onClose}
+        />
+      )}
     </>
   );
 };

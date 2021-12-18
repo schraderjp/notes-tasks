@@ -29,7 +29,7 @@ import {
 import { db } from '../../firebase';
 import { SunIcon, MoonIcon, SettingsIcon, CheckIcon } from '@chakra-ui/icons';
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { BsFillTagsFill } from 'react-icons/bs';
 import { useCollection, useDocumentData } from 'react-firebase-hooks/firestore';
 import {
@@ -45,6 +45,7 @@ import { signOut } from 'firebase/auth';
 
 const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
+  const navigate = useNavigate();
   const [user, authLoading, authErrors] = useAuthState(auth);
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
@@ -54,26 +55,18 @@ const Header = () => {
         position="relative"
         maxW={['100vw', '100vw', '800px']}
         alignItems="center"
-        justifyContent="space-between"
+        justifyContent={`${user ? 'space-between' : 'flex-end'}`}
       >
-        <LinkBox>
-          <Heading pl="4" pt="2" fontSize="1.4rem" as="h1">
-            <LinkOverlay as={Link} to="/">
-              Notes App
-            </LinkOverlay>
-          </Heading>
-        </LinkBox>
+        {user && (
+          <LinkBox>
+            <Heading pl="4" pt="2" fontSize="1.4rem" as="h1">
+              <LinkOverlay as={Link} to="/">
+                Notes App
+              </LinkOverlay>
+            </Heading>
+          </LinkBox>
+        )}
         <Flex align="center" pr="4" pt="2">
-          {user && (
-            <Tooltip label="Manage Tags">
-              <IconButton
-                size="md"
-                variant="ghost"
-                onClick={onOpen}
-                icon={<BsFillTagsFill />}
-              />
-            </Tooltip>
-          )}
           <Tooltip
             placement="start"
             label={`Toggle ${colorMode === 'light' ? 'Dark' : 'Light'} Mode`}
@@ -88,10 +81,13 @@ const Header = () => {
           {user && (
             <Tooltip label="Logout">
               <Button
-                variant="link"
+                variant="outline"
                 colorScheme="blue"
                 size="sm"
-                onClick={() => signOut(auth)}
+                onClick={() => {
+                  signOut(auth);
+                  navigate('/');
+                }}
               >
                 Logout
               </Button>
