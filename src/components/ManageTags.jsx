@@ -28,8 +28,7 @@ const createOption = (label) => ({
   value: label.toLowerCase().replace(/\W/g, ''),
 });
 
-const ManageTags = ({ onClose, isOpen }) => {
-  const [user, authLoading] = useAuthState(auth);
+const ManageTags = ({ onClose, isOpen, user, authLoading }) => {
   const [tagList, loading, error] = useDocumentData(doc(db, 'users', user.uid));
   const [notes, loadingNotes, notesError] = useCollection(
     collection(db, 'users', user.uid, 'notes')
