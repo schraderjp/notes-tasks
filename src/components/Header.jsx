@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useColorMode } from '@chakra-ui/color-mode';
+import { useColorMode } from '@chakra-ui/react';
 import {
   IconButton,
   Center,
@@ -50,11 +50,12 @@ const Header = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
-      <Flex
+      <Container
+        d="flex"
         position="relative"
         maxW={['100vw', '100vw', '800px']}
-        align="center"
-        justify="space-between"
+        alignItems="center"
+        justifyContent="space-between"
       >
         <LinkBox>
           <Heading pl="4" pt="2" fontSize="1.4rem" as="h1">
@@ -98,7 +99,7 @@ const Header = () => {
             </Tooltip>
           )}
         </Flex>
-      </Flex>
+      </Container>
       <ManageTags user={user} isOpen={isOpen} onClose={onClose} />
     </>
   );

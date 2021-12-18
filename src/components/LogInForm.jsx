@@ -60,7 +60,6 @@ const LogInForm = () => {
           <Input
             onBlur={handleBlur}
             onChange={handleChange}
-            name="email"
             type="email"
             name="email"
           />
