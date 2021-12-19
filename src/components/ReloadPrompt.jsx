@@ -7,6 +7,7 @@ import {
   AlertTitle,
   AlertDescription,
   Text,
+  Flex,
 } from '@chakra-ui/react';
 
 import { useRegisterSW } from 'virtual:pwa-register/react';

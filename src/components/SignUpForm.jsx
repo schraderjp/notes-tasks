@@ -122,7 +122,7 @@ const SignUpForm = () => {
             colorScheme="blue"
             mt="4"
             textAlign="center"
-            loading={loading}
+            isLoading={loading}
             loadingText="Signing Up"
           >
             Sign Up
