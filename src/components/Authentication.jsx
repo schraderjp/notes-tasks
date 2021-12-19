@@ -68,7 +68,7 @@ const Authentication = () => {
       </Flex>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent ml="3" mr="3">
           <ModalHeader align="center" textAlign="center" justify="center">
             {modalTitle}
           </ModalHeader>

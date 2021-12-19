@@ -62,6 +62,7 @@ const LogInForm = () => {
             onChange={handleChange}
             type="email"
             name="email"
+            variant="filled"
           />
           <FormErrorMessage>{errors.email}</FormErrorMessage>
         </FormControl>
@@ -77,6 +78,7 @@ const LogInForm = () => {
             onChange={handleChange}
             name="password"
             type="password"
+            variant="filled"
           />
           <FormErrorMessage>{errors.password}</FormErrorMessage>
         </FormControl>

@@ -27,6 +27,7 @@ const SignUpSchema = Yup.object().shape({
 });
 
 const SignUpForm = () => {
+  const [loading, setLoading] = useState(false);
   const {
     errors,
     dirty,
@@ -43,6 +44,7 @@ const SignUpForm = () => {
     },
     validationSchema: SignUpSchema,
     onSubmit: async (values) => {
+      setLoading(true);
       try {
         const User = await createUserWithEmailAndPassword(
           auth,
@@ -56,6 +58,7 @@ const SignUpForm = () => {
           email,
           userTags,
         });
+        setLoading(false);
       } catch (error) {
         console.log(error.message);
       }
@@ -76,6 +79,7 @@ const SignUpForm = () => {
             name="email"
             onChange={handleChange}
             onBlur={handleBlur}
+            variant="filled"
           />
           <FormErrorMessage>{errors.email}</FormErrorMessage>
         </FormControl>
@@ -91,6 +95,7 @@ const SignUpForm = () => {
             name="password"
             onChange={handleChange}
             onBlur={handleBlur}
+            variant="filled"
           />
           <FormErrorMessage>{errors.password}</FormErrorMessage>
         </FormControl>
@@ -106,6 +111,7 @@ const SignUpForm = () => {
             name="confirmPassword"
             onChange={handleChange}
             onBlur={handleBlur}
+            variant="filled"
           />
           <FormErrorMessage>{errors.confirmPassword}</FormErrorMessage>
         </FormControl>
@@ -116,6 +122,7 @@ const SignUpForm = () => {
             colorScheme="blue"
             mt="4"
             textAlign="center"
+            loading={loading}
             loadingText="Signing Up"
           >
             Sign Up
