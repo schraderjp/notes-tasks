@@ -52,7 +52,6 @@ function ReloadPrompt() {
           status="info"
           pos="fixed"
           bottom="1rem"
-          right="1rem"
           marginInline="5"
           display="flex"
           flexFlow="column"

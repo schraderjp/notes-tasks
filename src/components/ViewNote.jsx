@@ -111,6 +111,7 @@ const ViewNote = () => {
         <Box
           ml="8"
           mr="8"
+          style={{ pointerEvents: 'none' }}
           dangerouslySetInnerHTML={{
             __html: note.content,
           }}

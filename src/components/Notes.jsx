@@ -113,7 +113,7 @@ const Notes = () => {
     <>
       <Flex w="100%" align="center" justify="center" p="3">
         <Button
-          size="lg"
+          size="md"
           variant="ghost"
           onClick={createNewNote}
           leftIcon={<BiPlus />}
@@ -126,7 +126,7 @@ const Notes = () => {
         <Button
           marginInline="2"
           p="2"
-          size="lg"
+          size="md"
           variant="ghost"
           leftIcon={<BsTags />}
           onClick={onOpen}

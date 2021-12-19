@@ -72,6 +72,7 @@ const Header = () => {
             label={`Toggle ${colorMode === 'light' ? 'Dark' : 'Light'} Mode`}
           >
             <IconButton
+              mr="2"
               size="md"
               variant="ghost"
               onClick={toggleColorMode}
