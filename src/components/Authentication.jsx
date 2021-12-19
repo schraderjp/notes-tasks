@@ -50,7 +50,13 @@ const Authentication = () => {
   return (
     <>
       <Flex align="center" justify="center" height="100%" flexFlow="column">
-        <Heading fontFamily="Inter" pb="3" as="h1" fontSize="2.5rem">
+        <Heading
+          fontFamily="Inter"
+          pb="3"
+          as="h1"
+          fontSize="2rem"
+          textAlign="center"
+        >
           Notes and Tasks
         </Heading>
         <Button size="lg" onClick={openSignUpForm} colorScheme="blue" m="3">
