@@ -13,6 +13,15 @@ import {
   AccordionIcon,
   Box,
   useDisclosure,
+  useColorModeValue,
+  Icon,
+  LinkBox,
+  LinkOverlay,
+  MenuIcon,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from '@chakra-ui/react';
 import { useNavigate, Link } from 'react-router-dom';
 import { DeleteIcon, EditIcon, PlusSquareIcon } from '@chakra-ui/icons';
@@ -33,7 +42,7 @@ import {
 } from 'firebase/firestore';
 import { useDocument } from 'react-firebase-hooks/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { BsTags } from 'react-icons/bs';
+import { BsPrinter, BsTag, BsTags, BsThreeDotsVertical } from 'react-icons/bs';
 import ManageTags from './ManageTags';
 
 const Notes = () => {
@@ -41,6 +50,8 @@ const Notes = () => {
   const [user, authLoading, authErrors] = useAuthState(auth);
   const printRef = useRef();
   const [notes, setNotes] = useState(null);
+  const cardBg = useColorModeValue('#f1f1f1', '#222838');
+  const tagIconColor = useColorModeValue('blue.500', 'blue.300');
 
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
@@ -100,95 +111,94 @@ const Notes = () => {
 
   return (
     <>
-      <Accordion allowToggle>
-        <Flex w="100%" align="center" justify="center" p="3">
-          <Button
-            size="lg"
-            variant="ghost"
-            onClick={createNewNote}
-            leftIcon={<BiPlus />}
-            p="2"
-            marginInline="2"
-            fontFamily="Inter"
-          >
-            New
-          </Button>
-          <Button
-            marginInline="2"
-            p="2"
-            size="lg"
-            variant="ghost"
-            leftIcon={<BsTags />}
-            onClick={onOpen}
-            fontFamily="Inter"
-          >
-            Manage Tags
-          </Button>
-        </Flex>
-        {notes &&
-          notes.map((note) => (
-            <AccordionItem key={note.id}>
-              <Heading as="h2" d="flex">
-                <AccordionButton>
-                  <Box flex="1" textAlign="left">
-                    <Text fontFamily="Inter" fontSize={['1.1rem', '1.3rem']}>
-                      {note.title !== '' ? note.title : 'Untitled Note'}
-                    </Text>
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <Flex align="center" justify="center" m="1">
-                  <IconButton
-                    as={Link}
-                    to={`/notes/${note.id}`}
-                    icon={<EditIcon />}
+      <Flex w="100%" align="center" justify="center" p="3">
+        <Button
+          size="lg"
+          variant="ghost"
+          onClick={createNewNote}
+          leftIcon={<BiPlus />}
+          p="2"
+          marginInline="2"
+          fontFamily="Inter"
+        >
+          New
+        </Button>
+        <Button
+          marginInline="2"
+          p="2"
+          size="lg"
+          variant="ghost"
+          leftIcon={<BsTags />}
+          onClick={onOpen}
+          fontFamily="Inter"
+        >
+          Manage Tags
+        </Button>
+      </Flex>
+      {notes &&
+        notes.map((note) => (
+          <LinkBox key={note.id}>
+            <Box bg={cardBg} p="3" mb="3" marginInline="4" borderRadius="6">
+              <Flex mb="2" align="center" justify="space-between">
+                <Text fontFamily="Inter" fontSize={['1rem', '1.2rem']}>
+                  <LinkOverlay as={Link} to={`/notes/view/${note.id}`}>
+                    {note.title !== '' ? note.title : 'Untitled Note'}
+                  </LinkOverlay>
+                </Text>
+                <Menu>
+                  <MenuButton
                     variant="ghost"
-                    size="lg"
+                    as={IconButton}
+                    icon={<BsThreeDotsVertical />}
                   />
-                  <IconButton
-                    icon={<BiPrinter />}
-                    variant="ghost"
-                    size="lg"
-                    onClick={() => handlePrintClick(note.content)}
-                  />
-                  <IconButton
-                    onClick={() => deleteNote(note.id)}
-                    icon={<DeleteIcon />}
-                    variant="ghost"
-                    size="lg"
+                  <MenuList minW="max-content">
+                    <MenuItem
+                      as={Link}
+                      to={`/notes/${note.id}`}
+                      icon={<EditIcon />}
+                    >
+                      Edit
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        const titleToPrint = `<h1>${note.title}</h1>`;
+                        const contentToPrint = titleToPrint + note.content;
+                        handlePrintClick(contentToPrint);
+                      }}
+                      icon={<BsPrinter />}
+                    >
+                      Print
+                    </MenuItem>
+                    <MenuItem
+                      icon={<DeleteIcon />}
+                      onClick={() => deleteNote(note.id)}
+                    >
+                      Delete
+                    </MenuItem>
+                  </MenuList>
+                </Menu>
+              </Flex>
+              <Flex align="center" justify="flex-start">
+                <Flex align="flex-start" justify="flex-start">
+                  <Icon
+                    mr="2"
+                    fontSize="1.2rem"
+                    color={tagIconColor}
+                    as={BsTag}
                   />
                 </Flex>
-              </Heading>
+                <Flex align="flex-start" justify="flex-start" flexWrap="wrap">
+                  {note.tags.map((tag) => (
+                    <Tag>
+                      <TagLabel>{tag.label}</TagLabel>
+                    </Tag>
+                  ))}
+                </Flex>
+              </Flex>
+            </Box>
+          </LinkBox>
+        ))}
 
-              <AccordionPanel pos="relative" pb={4}>
-                <Flex flexFlow="column">
-                  <Flex align="center">
-                    {note.tags.map((item) => (
-                      <Tag
-                        size="sm"
-                        key={item.value}
-                        borderRadius="full"
-                        variant="solid"
-                        colorScheme="blue"
-                        mt="0"
-                        ml="0"
-                        mb="3"
-                      >
-                        <TagLabel>{item.label}</TagLabel>
-                      </Tag>
-                    ))}
-                  </Flex>
-                  <div
-                    style={{ pointerEvents: 'none' }}
-                    dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(note.content),
-                    }}
-                  />
-                </Flex>
-              </AccordionPanel>
-            </AccordionItem>
-          ))}
-      </Accordion>
       <div style={{ display: 'none' }}>
         <PrintComponent ref={printRef} />
       </div>

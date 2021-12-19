@@ -143,8 +143,7 @@ const TextEditor = () => {
           size="lg"
           icon={<ArrowBackIcon />}
           variant="ghost"
-          as={Link}
-          to="/"
+          onClick={() => navigate(-1)}
         />
         <Editable
           onChange={updateTitle}

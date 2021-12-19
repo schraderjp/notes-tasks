@@ -16,6 +16,7 @@ import { useState } from 'react';
 import Authentication from './Authentication';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../firebase';
+import ViewNote from './ViewNote';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
               <Route path="/" element={<Authentication />} />
               <Route path="/notes" element={<Notes />} />
               <Route path="/notes/:noteId" element={<TextEditor />} />
+              <Route path="/notes/view/:noteId" element={<ViewNote />} />
             </Routes>
           </Container>
           <ReloadPrompt />

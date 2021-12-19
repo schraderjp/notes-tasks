@@ -52,18 +52,19 @@ function ReloadPrompt() {
           pos="fixed"
           bottom="1rem"
           right="1rem"
-          marginInline="3"
+          marginInline="5"
           display="flex"
-          flexFlow="column"
           alignItems="center"
           justifyContent="center"
         >
           <AlertIcon />
           <AlertDescription p="2">
             {offlineReady ? (
-              <Text>App ready to work offline</Text>
+              <Text textAlign="center" fontSize="0.8rem">
+                App ready to work offline
+              </Text>
             ) : (
-              <Text fontSize="0.8rem">
+              <Text textAlign="center" fontSize="0.8rem">
                 New content available, click on reload button to update.
               </Text>
             )}
