@@ -54,6 +54,7 @@ function ReloadPrompt() {
           right="1rem"
           marginInline="5"
           display="flex"
+          flexFlow="column"
           alignItems="center"
           justifyContent="center"
         >
@@ -69,14 +70,16 @@ function ReloadPrompt() {
               </Text>
             )}
           </AlertDescription>
-          {needRefresh && (
-            <Button size="sm" m="2" onClick={() => updateServiceWorker(true)}>
-              Reload
+          <Flex align="center" justify="center">
+            {needRefresh && (
+              <Button size="sm" m="2" onClick={() => updateServiceWorker(true)}>
+                Reload
+              </Button>
+            )}
+            <Button size="sm" m="2" onClick={() => close()} variant="outline">
+              Close
             </Button>
-          )}
-          <Button size="sm" m="2" onClick={() => close()} variant="outline">
-            Close
-          </Button>
+          </Flex>
         </Alert>
       )}
     </>
