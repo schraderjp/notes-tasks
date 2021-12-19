@@ -1,5 +1,6 @@
 import React, { forwardRef } from 'react';
 import styled from 'styled-components';
+import '../print.css';
 
 const StyledDiv = styled.div`
   max-width: 8in;
