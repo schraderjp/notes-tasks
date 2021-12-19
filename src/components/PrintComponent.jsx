@@ -4,6 +4,7 @@ import styled from 'styled-components';
 const StyledDiv = styled.div`
   max-width: 8in;
   color: #000;
+  background: #fff;
   & h1 {
     font-size: 2rem;
     font-weight: bold;

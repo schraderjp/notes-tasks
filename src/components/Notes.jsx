@@ -189,7 +189,7 @@ const Notes = () => {
                 </Flex>
                 <Flex align="flex-start" justify="flex-start" flexWrap="wrap">
                   {note.tags.map((tag) => (
-                    <Tag>
+                    <Tag mr="2">
                       <TagLabel>{tag.label}</TagLabel>
                     </Tag>
                   ))}
