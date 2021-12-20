@@ -10,6 +10,12 @@ import {
   Heading,
   IconButton,
   Input,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItemOption,
+  MenuList,
+  MenuOptionGroup,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -24,6 +30,7 @@ import {
   Textarea,
   useColorModeValue,
   useDisclosure,
+  VisuallyHidden,
   VStack,
 } from '@chakra-ui/react';
 import { MdAddTask } from 'react-icons/md';
@@ -47,9 +54,16 @@ import {
 import { auth, db } from '../../firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
-import id from 'date-fns/esm/locale/id/index.js';
+import { FaFilter } from 'react-icons/fa';
 
 const Tasks = () => {
+  const initialTaskState = {
+    id: '',
+    description: '',
+    dueDate: '',
+    notes: '',
+    completed: false,
+  };
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cardBg = useColorModeValue('#f0f0f0', '#222838');
   const completedColor = useColorModeValue(
@@ -64,13 +78,7 @@ const Tasks = () => {
   };
   const [showCompleted, setShowCompleted] = useState(true);
   const [tasks, setTasks] = useState(null);
-  const [task, setTask] = useState({
-    id: '',
-    description: '',
-    dueDate: '',
-    notes: '',
-    completed: false,
-  });
+  const [task, setTask] = useState(initialTaskState);
   const [editMode, setEditMode] = useState(false);
   const editClickHandler = (currentTask) => {
     setEditMode(true);
@@ -84,10 +92,11 @@ const Tasks = () => {
 
   const addNewTask = async () => {
     const newId = nanoid();
+    setTask(initialTaskState);
     await updateDoc(doc(db, 'users', user.uid), {
       tasks: arrayUnion({ ...task, id: newId }),
     });
-    onClose();
+    closeModal();
   };
 
   const updateTaskStatus = async (taskId) => {
@@ -128,6 +137,7 @@ const Tasks = () => {
     updateDoc(doc(db, 'users', user.uid), {
       tasks: arrayRemove(task),
     });
+    closeModal();
   };
 
   useEffect(() => {
@@ -165,6 +175,14 @@ const Tasks = () => {
       <Box pos="relative" textAlign="center">
         {/* <Heading as="h2">Tasks</Heading> */}
         <Flex align="center" justify="space-around" p="3">
+          <Menu closeOnSelect={false}>
+            <MenuButton as={IconButton} icon={<FaFilter />} variant="ghost" />
+            <MenuList minWidth="max-content">
+              <MenuOptionGroup type="checkbox" title="Filter by Tag">
+                <MenuItemOption>Item</MenuItemOption>
+              </MenuOptionGroup>
+            </MenuList>
+          </Menu>
           <Button
             size="md"
             variant="ghost"
@@ -200,30 +218,40 @@ const Tasks = () => {
           {tasks &&
             tasks.map((task) => (
               <Box
+                cursor="pointer"
                 key={task.id}
                 flex="1"
                 width="100%"
                 p="2"
                 bg={cardBg}
                 borderRadius={6}
+                onClick={() => editClickHandler(task)}
               >
                 <Flex flexFlow="column">
-                  <Checkbox
-                    id={task.id}
-                    onChange={() => updateTaskStatus(task.id)}
-                    spacing="1rem"
-                    ml="3"
-                    size="lg"
-                    flex="1"
-                    isChecked={task.completed}
-                  >
-                    <span style={task.completed ? completedStyle : undefined}>
+                  <Flex align="center">
+                    <Checkbox
+                      maxWidth="max-content"
+                      id={task.id}
+                      onChange={() => updateTaskStatus(task.id)}
+                      spacing="0"
+                      ml="3"
+                      size="lg"
+                      flex="1"
+                      isChecked={task.completed}
+                    >
+                      <VisuallyHidden>{task.description}</VisuallyHidden>
+                    </Checkbox>
+                    <Text
+                      userSelect="none"
+                      pl="3"
+                      style={task.completed ? completedStyle : undefined}
+                    >
                       {task.description}
-                    </span>
-                  </Checkbox>
+                    </Text>
+                  </Flex>
                   <Flex>
-                    <Flex mt="3" ml={'1'} mb="1">
-                      <IconButton
+                    <Flex mt="1" ml={'2'} mb="1">
+                      {/* <IconButton
                         onClick={() => editClickHandler(task)}
                         mr="1"
                         variant="ghost"
@@ -233,7 +261,7 @@ const Tasks = () => {
                         variant="ghost"
                         icon={<DeleteIcon />}
                         onClick={() => deleteTaskHandler(task)}
-                      />
+                      /> */}
                       {task.dueDate && (
                         <Flex
                           style={task.completed ? completedStyle : undefined}
@@ -241,21 +269,18 @@ const Tasks = () => {
                           align="center"
                           w="9rem"
                         >
-                          <Text fontWeight="bold" color="blue.300">
+                          <Text
+                            userSelect="none"
+                            fontWeight="bold"
+                            color="blue.300"
+                          >
                             Due:
                           </Text>
-                          <Text pl="2">{task.dueDate}</Text>
+                          <Text userSelect="none" pl="2">
+                            {task.dueDate}
+                          </Text>
                         </Flex>
                       )}
-                    </Flex>
-                    <Flex pos={'absolute'} bottom="1rem" right="1rem">
-                      <Button
-                        colorScheme={task.completed ? 'red' : 'green'}
-                        variant="ghost"
-                        onClick={() => updateTaskStatus(task.id)}
-                      >
-                        Mark {task.completed ? 'Not Complete' : 'Complete'}
-                      </Button>
                     </Flex>
                   </Flex>
                 </Flex>
@@ -314,6 +339,13 @@ const Tasks = () => {
             >
               Cancel
             </Button>
+            <IconButton
+              ml="3"
+              size="lg"
+              variant="ghost"
+              icon={<DeleteIcon />}
+              onClick={() => deleteTaskHandler(task)}
+            />
           </ModalFooter>
         </ModalContent>
       </Modal>
