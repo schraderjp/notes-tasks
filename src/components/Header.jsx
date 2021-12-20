@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useColorMode } from '@chakra-ui/react';
+import { Image, useColorMode, useColorModeValue } from '@chakra-ui/react';
 import {
   IconButton,
   Center,
@@ -29,7 +29,7 @@ import {
 import { db } from '../../firebase';
 import { SunIcon, MoonIcon, SettingsIcon, CheckIcon } from '@chakra-ui/icons';
 import { useEffect, useState } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, NavLink, useNavigate } from 'react-router-dom';
 import { BsFillTagsFill } from 'react-icons/bs';
 import { useCollection, useDocumentData } from 'react-firebase-hooks/firestore';
 import {
@@ -42,9 +42,11 @@ import {
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../firebase';
 import { signOut } from 'firebase/auth';
+import { MdLogout } from 'react-icons/md';
 
 const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
+  const headingColor = useColorModeValue('blue.400', 'blue.300');
   const navigate = useNavigate();
   const [user, authLoading, authErrors] = useAuthState(auth);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -53,19 +55,41 @@ const Header = () => {
       <Container
         d="flex"
         position="relative"
+        pt="1"
+        height="4rem"
         maxW={['100vw', '100vw', '800px']}
         alignItems="center"
         justifyContent={`${user ? 'space-between' : 'flex-end'}`}
       >
         {user && (
           <LinkBox>
-            <Heading fontFamily="Inter" pl="4" pt="2" fontSize="1.4rem" as="h1">
-              <LinkOverlay as={Link} to="/">
-                Notes App
-              </LinkOverlay>
-            </Heading>
+            <LinkOverlay as={Link} to="/">
+              <Image width="3rem" src="/favicon.svg" alt="Cartoon notebook" />
+            </LinkOverlay>
           </LinkBox>
         )}
+        <Flex pt="2">
+          <Button
+            as={NavLink}
+            to="/notes"
+            marginInline="2"
+            size="md"
+            colorScheme="blue"
+            variant={({ isActive }) => (isActive ? 'filled' : 'ghost')}
+          >
+            Notes
+          </Button>
+          <Button
+            variant={({ isActive }) => (isActive ? 'filled' : 'ghost')}
+            marginInline="2"
+            as={NavLink}
+            to="/tasks"
+            size="md"
+            colorScheme="blue"
+          >
+            Tasks
+          </Button>
+        </Flex>
         <Flex align="center" pr="4" pt="2">
           <Tooltip
             placement="start"
@@ -81,17 +105,15 @@ const Header = () => {
           </Tooltip>
           {user && (
             <Tooltip label="Logout">
-              <Button
-                variant="outline"
-                colorScheme="blue"
+              <IconButton
+                variant="ghost"
                 size="sm"
                 onClick={() => {
                   signOut(auth);
                   navigate('/');
                 }}
-              >
-                Logout
-              </Button>
+                icon={<MdLogout />}
+              />
             </Tooltip>
           )}
         </Flex>

@@ -17,6 +17,7 @@ import Authentication from './Authentication';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../firebase';
 import ViewNote from './ViewNote';
+import Tasks from './Tasks';
 
 function App() {
   return (
@@ -24,12 +25,17 @@ function App() {
       <Router>
         <ChakraProvider theme={theme}>
           <Header />
-          <Container p={['0', '1em']} maxW={['100vw', '100vw', '800px']}>
+          <Container
+            h="calc(100vh-4rem)"
+            p={['0', '1em']}
+            maxW={['100vw', '100vw', '800px']}
+          >
             <Routes>
               <Route path="/" element={<Authentication />} />
               <Route path="/notes" element={<Notes />} />
               <Route path="/notes/:noteId" element={<TextEditor />} />
               <Route path="/notes/view/:noteId" element={<ViewNote />} />
+              <Route path="/tasks" element={<Tasks />} />
             </Routes>
           </Container>
           <ReloadPrompt />

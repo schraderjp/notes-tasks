@@ -10,17 +10,23 @@ import {
   ButtonGroup,
   Flex,
   Heading,
+  Icon,
   IconButton,
   Spinner,
+  Tag,
+  TagLabel,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { ArrowBackIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import { BiPrinter } from 'react-icons/bi';
 import PrintComponent from './PrintComponent';
 import { useReactToPrint } from 'react-to-print';
+import { BsTag } from 'react-icons/bs';
 
 const ViewNote = () => {
   const [user, authLoading, authErrors] = useAuthState(auth);
   const [note, setNote] = useState(null);
+  const tagIconColor = useColorModeValue('blue.500', 'blue.300');
   const navigate = useNavigate();
   const { noteId } = useParams();
   const printRef = useRef();
@@ -108,14 +114,26 @@ const ViewNote = () => {
         {note && note.title}
       </Heading>
       {note && (
-        <Box
-          ml="8"
-          mr="8"
-          style={{ pointerEvents: 'none' }}
-          dangerouslySetInnerHTML={{
-            __html: note.content,
-          }}
-        />
+        <>
+          <Flex justify="center" mb="3" align="center">
+            <Icon color={tagIconColor} mr="2" fontSize="1.4rem">
+              <BsTag />
+            </Icon>
+            {note.tags.map((tag) => (
+              <Tag colorScheme="blue" mr="1" ml="1">
+                <TagLabel>{tag.label}</TagLabel>
+              </Tag>
+            ))}
+          </Flex>
+          <Box
+            ml="8"
+            mr="8"
+            style={{ pointerEvents: 'none' }}
+            dangerouslySetInnerHTML={{
+              __html: note.content,
+            }}
+          />
+        </>
       )}
       <div style={{ display: 'none' }}>
         <PrintComponent ref={printRef} />

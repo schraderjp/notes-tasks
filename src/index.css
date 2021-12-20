@@ -199,7 +199,22 @@ ul[data-type='taskList'] li[data-checked='true'] p {
   background-color: #576679;
 }
 
+label[data-checked] {
+  text-decoration: line-through;
+  text-decoration-thickness: 3px;
+}
+
+.chakra-ui-dark label[data-checked] {
+  color: rgb(88, 88, 88);
+}
+.chakra-ui-light label[data-checked] {
+  color: rgb(128, 128, 128);
+}
+
 @media print {
+  body {
+    background: #fff;
+  }
   .ProseMirror {
     overflow-x: none;
   }

@@ -22,6 +22,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Spinner,
 } from '@chakra-ui/react';
 import { useNavigate, Link } from 'react-router-dom';
 import { DeleteIcon, EditIcon, PlusSquareIcon } from '@chakra-ui/icons';
@@ -50,7 +51,7 @@ const Notes = () => {
   const [user, authLoading, authErrors] = useAuthState(auth);
   const printRef = useRef();
   const [notes, setNotes] = useState(null);
-  const cardBg = useColorModeValue('#f1f1f1', '#222838');
+  const cardBg = useColorModeValue('#f0f0f0', '#222838');
   const tagIconColor = useColorModeValue('blue.500', 'blue.300');
 
   const handlePrint = useReactToPrint({
@@ -135,10 +136,22 @@ const Notes = () => {
           Manage Tags
         </Button>
       </Flex>
+      {!notes && (
+        <Flex w="100%" h="6rem" align="center" justify="center">
+          <Spinner />
+        </Flex>
+      )}
       {notes &&
         notes.map((note) => (
           <LinkBox key={note.id}>
-            <Box bg={cardBg} p="3" mb="3" marginInline="4" borderRadius="6">
+            <Box
+              boxShadow="md"
+              bg={cardBg}
+              p="3"
+              mb="3"
+              marginInline="4"
+              borderRadius="6"
+            >
               <Flex mb="2" align="center" justify="space-between">
                 <Text fontFamily="Inter" fontSize={['1rem', '1.2rem']}>
                   <LinkOverlay as={Link} to={`/notes/view/${note.id}`}>
@@ -147,6 +160,7 @@ const Notes = () => {
                 </Text>
                 <Menu>
                   <MenuButton
+                    mr="2"
                     variant="ghost"
                     as={IconButton}
                     icon={<BsThreeDotsVertical />}
@@ -189,7 +203,7 @@ const Notes = () => {
                 </Flex>
                 <Flex align="flex-start" justify="flex-start" flexWrap="wrap">
                   {note.tags.map((tag) => (
-                    <Tag mr="2">
+                    <Tag colorScheme="blue" mr="2">
                       <TagLabel>{tag.label}</TagLabel>
                     </Tag>
                   ))}

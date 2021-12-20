@@ -142,7 +142,6 @@ const SelectTag = ({ note, setNote, docRef, user }) => {
             size="md"
             key={item.id}
             borderRadius="full"
-            variant="solid"
             colorScheme="blue"
             m="1"
           >
