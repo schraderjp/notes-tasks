@@ -52,7 +52,16 @@ import id from 'date-fns/esm/locale/id/index.js';
 const Tasks = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cardBg = useColorModeValue('#f0f0f0', '#222838');
+  const completedColor = useColorModeValue(
+    'rgb(128, 128, 128)',
+    'rgb(88,88,88'
+  );
   const [user, authLoading, authErrors] = useAuthState(auth);
+  const completedStyle = {
+    textDecoration: 'line-through',
+    textDecorationThickness: '3px',
+    color: completedColor,
+  };
   const [showCompleted, setShowCompleted] = useState(true);
   const [tasks, setTasks] = useState(null);
   const [task, setTask] = useState({
@@ -81,9 +90,11 @@ const Tasks = () => {
     onClose();
   };
 
-  const updateTaskStatus = async (e, taskId) => {
+  const updateTaskStatus = async (taskId) => {
     const currentTasks = tasks;
-    currentTasks.find((item) => item.id == taskId).completed = e.target.checked;
+    const taskIndex = currentTasks.findIndex((item) => item.id == taskId);
+    console.log(taskIndex);
+    currentTasks[taskIndex].completed = !currentTasks[taskIndex].completed;
     await updateDoc(doc(db, 'users', user.uid), {
       tasks: currentTasks,
     });
@@ -199,35 +210,53 @@ const Tasks = () => {
                 <Flex flexFlow="column">
                   <Checkbox
                     id={task.id}
-                    onChange={(e) => updateTaskStatus(e, task.id)}
+                    onChange={() => updateTaskStatus(task.id)}
                     spacing="1rem"
                     ml="3"
                     size="lg"
                     flex="1"
                     isChecked={task.completed}
                   >
-                    {task.description}
+                    <span style={task.completed ? completedStyle : undefined}>
+                      {task.description}
+                    </span>
                   </Checkbox>
-                  <Flex mt="3" ml={'1'} mb="1">
-                    <IconButton
-                      onClick={() => editClickHandler(task)}
-                      mr="1"
-                      variant="ghost"
-                      icon={<EditIcon />}
-                    />
-                    <IconButton
-                      variant="ghost"
-                      icon={<DeleteIcon />}
-                      onClick={() => deleteTaskHandler(task)}
-                    />
-                    {task.dueDate && (
-                      <Flex ml={'1'} align="center" w="9rem">
-                        <Text fontWeight="bold" color="blue.300">
-                          Due:
-                        </Text>
-                        <Text pl="2">{task.dueDate}</Text>
-                      </Flex>
-                    )}
+                  <Flex>
+                    <Flex mt="3" ml={'1'} mb="1">
+                      <IconButton
+                        onClick={() => editClickHandler(task)}
+                        mr="1"
+                        variant="ghost"
+                        icon={<EditIcon />}
+                      />
+                      <IconButton
+                        variant="ghost"
+                        icon={<DeleteIcon />}
+                        onClick={() => deleteTaskHandler(task)}
+                      />
+                      {task.dueDate && (
+                        <Flex
+                          style={task.completed ? completedStyle : undefined}
+                          ml={'1'}
+                          align="center"
+                          w="9rem"
+                        >
+                          <Text fontWeight="bold" color="blue.300">
+                            Due:
+                          </Text>
+                          <Text pl="2">{task.dueDate}</Text>
+                        </Flex>
+                      )}
+                    </Flex>
+                    <Flex pos={'absolute'} bottom="1rem" right="1rem">
+                      <Button
+                        colorScheme={task.completed ? 'red' : 'green'}
+                        variant="ghost"
+                        onClick={() => updateTaskStatus(task.id)}
+                      >
+                        Mark {task.completed ? 'Not Complete' : 'Complete'}
+                      </Button>
+                    </Flex>
                   </Flex>
                 </Flex>
               </Box>
