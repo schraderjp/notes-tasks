@@ -55,6 +55,7 @@ import { auth, db } from '../../firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { FaFilter } from 'react-icons/fa';
+import SelectTaskTags from './SelectTaskTags';
 
 const Tasks = () => {
   const initialTaskState = {
@@ -63,6 +64,7 @@ const Tasks = () => {
     dueDate: '',
     notes: '',
     completed: false,
+    tags: [],
   };
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cardBg = useColorModeValue('#f0f0f0', '#222838');
@@ -77,6 +79,7 @@ const Tasks = () => {
     color: completedColor,
   };
   const [showCompleted, setShowCompleted] = useState(true);
+  const [tags, setTags] = useState(null);
   const [tasks, setTasks] = useState(null);
   const [task, setTask] = useState(initialTaskState);
   const [editMode, setEditMode] = useState(false);
@@ -102,7 +105,6 @@ const Tasks = () => {
   const updateTaskStatus = async (taskId) => {
     const currentTasks = tasks;
     const taskIndex = currentTasks.findIndex((item) => item.id == taskId);
-    console.log(taskIndex);
     currentTasks[taskIndex].completed = !currentTasks[taskIndex].completed;
     await updateDoc(doc(db, 'users', user.uid), {
       tasks: currentTasks,
@@ -117,6 +119,7 @@ const Tasks = () => {
       description: task.description,
       dueDate: task.dueDate,
       notes: task.notes,
+      tags: task.tags,
     };
     currentTasks[taskIndex] = updatedTask;
     await updateDoc(doc(db, 'users', user.uid), {
@@ -148,6 +151,8 @@ const Tasks = () => {
     if (!user && authLoading) return;
     const unsub = onSnapshot(doc(db, 'users', user.uid), (doc) => {
       const tasksList = doc.data().tasks;
+      const userTags = doc.data().userTags;
+      setUserTags(userTags);
       showCompleted
         ? setTasks(tasksList)
         : setTasks(
@@ -322,6 +327,12 @@ const Tasks = () => {
                 resize="none"
               ></Textarea>
             </FormControl>
+            <SelectTaskTags
+              tasks={tasks}
+              setTask={setTask}
+              user={user}
+              task={task}
+            />
           </ModalBody>
           <ModalFooter d="flex" alignItems="center" justifyContent="center">
             <Button
