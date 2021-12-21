@@ -287,30 +287,48 @@ const Tasks = () => {
                 cursor="pointer"
                 key={task.id}
                 flex="1"
+                h="5rem"
                 width="100%"
-                p="2"
+                p="0"
                 bg={cardBg}
                 borderRadius={6}
                 align="center"
                 justify="space-between"
               >
-                <Flex flexFlow="column" flex="1">
+                <Flex
+                  h="100%"
+                  alignItems="centent"
+                  justifyContent="center"
+                  pl="3"
+                  pr="3"
+                  onClick={() => {
+                    updateTaskStatus(task.id);
+                  }}
+                >
+                  <Checkbox
+                    flex="1"
+                    maxWidth="max-content"
+                    id={task.id}
+                    onChange={() => {
+                      updateTaskStatus(task.id);
+                    }}
+                    spacing="0"
+                    size="lg"
+                    flex="1"
+                    isChecked={task.completed}
+                  >
+                    <VisuallyHidden>{task.description}</VisuallyHidden>
+                  </Checkbox>
+                </Flex>
+                <Flex
+                  flexFlow="column"
+                  flex="1"
+                  p="1"
+                  onClick={() => {
+                    editClickHandler(task);
+                  }}
+                >
                   <Flex align="center">
-                    <Checkbox
-                      maxWidth="max-content"
-                      id={task.id}
-                      onChange={(e) => {
-                        e.stopPropagation();
-                        updateTaskStatus(task.id);
-                      }}
-                      spacing="0"
-                      ml="3"
-                      size="lg"
-                      flex="1"
-                      isChecked={task.completed}
-                    >
-                      <VisuallyHidden>{task.description}</VisuallyHidden>
-                    </Checkbox>
                     <Text
                       userSelect="none"
                       pl="3"
@@ -374,15 +392,6 @@ const Tasks = () => {
                     </Flex>
                   </Flex>
                 </Flex>
-                <Button
-                  leftIcon={<EditIcon />}
-                  onClick={() => {
-                    editClickHandler(task);
-                  }}
-                  mr="2"
-                >
-                  Edit
-                </Button>
               </Flex>
             ))}
         </VStack>
