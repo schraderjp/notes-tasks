@@ -4,10 +4,18 @@ import {
   Box,
   Button,
   Checkbox,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
   Flex,
   FormControl,
   FormLabel,
   Heading,
+  Icon,
   IconButton,
   Input,
   Menu,
@@ -26,6 +34,8 @@ import {
   Skeleton,
   Spinner,
   Switch,
+  Tag,
+  TagLabel,
   Text,
   Textarea,
   useColorModeValue,
@@ -33,7 +43,7 @@ import {
   VisuallyHidden,
   VStack,
 } from '@chakra-ui/react';
-import { MdAddTask } from 'react-icons/md';
+import { MdAddTask, MdTag } from 'react-icons/md';
 import {
   CheckIcon,
   CloseIcon,
@@ -54,8 +64,9 @@ import {
 import { auth, db } from '../../firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
-import { FaFilter } from 'react-icons/fa';
+import { FaFilter, FaTag } from 'react-icons/fa';
 import SelectTaskTags from './SelectTaskTags';
+import { BiTag } from 'react-icons/bi';
 
 const Tasks = () => {
   const initialTaskState = {
@@ -65,6 +76,7 @@ const Tasks = () => {
     notes: '',
     completed: false,
     tags: [],
+    shown: true,
   };
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cardBg = useColorModeValue('#f0f0f0', '#222838');
@@ -79,7 +91,9 @@ const Tasks = () => {
     color: completedColor,
   };
   const [showCompleted, setShowCompleted] = useState(true);
-  const [tags, setTags] = useState(null);
+  const [userTags, setUserTags] = useState(null);
+  const [defaultTags, setDefaultTags] = useState([]);
+  const [allTasks, setAllTasks] = useState([]);
   const [tasks, setTasks] = useState(null);
   const [task, setTask] = useState(initialTaskState);
   const [editMode, setEditMode] = useState(false);
@@ -95,7 +109,6 @@ const Tasks = () => {
 
   const addNewTask = async () => {
     const newId = nanoid();
-    setTask(initialTaskState);
     await updateDoc(doc(db, 'users', user.uid), {
       tasks: arrayUnion({ ...task, id: newId }),
     });
@@ -120,6 +133,8 @@ const Tasks = () => {
       dueDate: task.dueDate,
       notes: task.notes,
       tags: task.tags,
+      completed: task.completed,
+      shown: task.shown,
     };
     currentTasks[taskIndex] = updatedTask;
     await updateDoc(doc(db, 'users', user.uid), {
@@ -143,6 +158,37 @@ const Tasks = () => {
     closeModal();
   };
 
+  const handleTagFilter = async (value) => {
+    const currentTasks = allTasks;
+    if (value !== 'all') {
+      currentTasks.forEach((task) => {
+        if (task.tags.find((item) => item.value === value) === undefined) {
+          task.shown = false;
+        }
+      });
+    } else {
+      currentTasks.forEach((task) => (task.shown = true));
+    }
+
+    await updateDoc(doc(db, 'users', user.uid), {
+      tasks: currentTasks,
+    });
+  };
+
+  const toggleShowCompleted = async (value) => {
+    setShowCompleted(value);
+    const currentTasks = allTasks;
+    currentTasks.forEach((task) => {
+      if (task.completed) {
+        task.shown = value;
+      }
+    });
+
+    await updateDoc(doc(db, 'users', user.uid), {
+      tasks: currentTasks,
+    });
+  };
+
   useEffect(() => {
     if (!user && !authLoading) {
       navigate('/');
@@ -151,17 +197,17 @@ const Tasks = () => {
     if (!user && authLoading) return;
     const unsub = onSnapshot(doc(db, 'users', user.uid), (doc) => {
       const tasksList = doc.data().tasks;
-      const userTags = doc.data().userTags;
-      setUserTags(userTags);
-      showCompleted
-        ? setTasks(tasksList)
-        : setTasks(
-            tasksList.filter((task) => {
-              if (task.completed === false) {
-                return task;
-              }
-            })
-          );
+      console.log(doc.data().tasks);
+      const tagsFromDb = doc.data().userTags;
+      setUserTags(tagsFromDb);
+      setAllTasks(tasksList);
+      setTasks(
+        tasksList.filter((task) => {
+          if (task.shown) {
+            return task;
+          }
+        })
+      );
     });
     return () => {
       unsub();
@@ -180,12 +226,26 @@ const Tasks = () => {
       <Box pos="relative" textAlign="center">
         {/* <Heading as="h2">Tasks</Heading> */}
         <Flex align="center" justify="space-around" p="3">
-          <Menu closeOnSelect={false}>
+          <Menu>
             <MenuButton as={IconButton} icon={<FaFilter />} variant="ghost" />
             <MenuList minWidth="max-content">
-              <MenuOptionGroup type="checkbox" title="Filter by Tag">
-                <MenuItemOption>Item</MenuItemOption>
-              </MenuOptionGroup>
+              {userTags && (
+                <MenuOptionGroup
+                  onChange={(value) => handleTagFilter(value)}
+                  type="radio"
+                  title="Filter by Tag"
+                  defaultValue="all"
+                >
+                  <MenuItemOption isChecked="true" value="all">
+                    All
+                  </MenuItemOption>
+                  {userTags.map((tag) => (
+                    <MenuItemOption value={tag.value} key={tag.value}>
+                      {tag.label}
+                    </MenuItemOption>
+                  ))}
+                </MenuOptionGroup>
+              )}
             </MenuList>
           </Menu>
           <Button
@@ -197,6 +257,7 @@ const Tasks = () => {
             leftIcon={<MdAddTask size="25" />}
             onClick={() => {
               setEditMode(false);
+              setTask(initialTaskState);
               onOpen();
             }}
           >
@@ -208,13 +269,13 @@ const Tasks = () => {
             </Text>
             <Switch
               isChecked={showCompleted}
-              onChange={(e) => setShowCompleted(e.target.checked)}
+              onChange={(e) => toggleShowCompleted(e.target.checked)}
               id="show-completed"
             />
           </Flex>
         </Flex>
 
-        <VStack>
+        <VStack p="3">
           {!tasks && (
             <Flex mt="3" align="center" justify="center">
               <Spinner />
@@ -222,7 +283,7 @@ const Tasks = () => {
           )}
           {tasks &&
             tasks.map((task) => (
-              <Box
+              <Flex
                 cursor="pointer"
                 key={task.id}
                 flex="1"
@@ -230,14 +291,18 @@ const Tasks = () => {
                 p="2"
                 bg={cardBg}
                 borderRadius={6}
-                onClick={() => editClickHandler(task)}
+                align="center"
+                justify="space-between"
               >
-                <Flex flexFlow="column">
+                <Flex flexFlow="column" flex="1">
                   <Flex align="center">
                     <Checkbox
                       maxWidth="max-content"
                       id={task.id}
-                      onChange={() => updateTaskStatus(task.id)}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        updateTaskStatus(task.id);
+                      }}
                       spacing="0"
                       ml="3"
                       size="lg"
@@ -254,53 +319,82 @@ const Tasks = () => {
                       {task.description}
                     </Text>
                   </Flex>
+
                   <Flex>
-                    <Flex mt="1" ml={'2'} mb="1">
-                      {/* <IconButton
-                        onClick={() => editClickHandler(task)}
-                        mr="1"
-                        variant="ghost"
-                        icon={<EditIcon />}
-                      />
-                      <IconButton
-                        variant="ghost"
-                        icon={<DeleteIcon />}
-                        onClick={() => deleteTaskHandler(task)}
-                      /> */}
-                      {task.dueDate && (
-                        <Flex
-                          style={task.completed ? completedStyle : undefined}
-                          ml={'1'}
-                          align="center"
-                          w="9rem"
-                        >
-                          <Text
-                            userSelect="none"
-                            fontWeight="bold"
-                            color="blue.300"
-                          >
-                            Due:
-                          </Text>
-                          <Text userSelect="none" pl="2">
-                            {task.dueDate}
-                          </Text>
-                        </Flex>
-                      )}
+                    <Flex
+                      flex="1"
+                      mt="1"
+                      ml={'2'}
+                      mb="1"
+                      justifyContent="flex-start"
+                    >
+                      <Flex ml={'1'} align="center" flex="1" w="100%">
+                        {task.tags[0] && (
+                          <Flex align="center">
+                            <Icon mr="2" as={FaTag} />
+                            {task.tags.map((tag) => (
+                              <Tag
+                                size="sm"
+                                mr="1"
+                                colorScheme="blue"
+                                key={tag.value}
+                              >
+                                <TagLabel>{tag.label}</TagLabel>
+                              </Tag>
+                            ))}
+                          </Flex>
+                        )}
+                        {task.dueDate && (
+                          <>
+                            <Text pl="3" pr="3">
+                              •
+                            </Text>
+                            <Text
+                              style={
+                                task.completed ? completedStyle : undefined
+                              }
+                              userSelect="none"
+                              fontWeight="bold"
+                              color="blue.300"
+                            >
+                              Due:
+                            </Text>
+                            <Text
+                              style={
+                                task.completed ? completedStyle : undefined
+                              }
+                              userSelect="none"
+                              pl="2"
+                            >
+                              {task.dueDate}
+                            </Text>
+                          </>
+                        )}
+                      </Flex>
                     </Flex>
                   </Flex>
                 </Flex>
-              </Box>
+                <Button
+                  leftIcon={<EditIcon />}
+                  onClick={() => {
+                    editClickHandler(task);
+                  }}
+                  mr="2"
+                >
+                  Edit
+                </Button>
+              </Flex>
             ))}
         </VStack>
       </Box>
-      <Modal isOpen={isOpen} onClose={closeModal}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader textAlign="center">
+      <Drawer placement="right" isOpen={isOpen} onClose={closeModal}>
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerHeader textAlign="center">
             {editMode ? 'Edit' : 'New'} Task
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
+          </DrawerHeader>
+          <DrawerCloseButton />
+          <DrawerBody>
             <FormControl mb="2" ml="2" mr="2">
               <FormLabel>Description:</FormLabel>
               <Input
@@ -333,8 +427,8 @@ const Tasks = () => {
               user={user}
               task={task}
             />
-          </ModalBody>
-          <ModalFooter d="flex" alignItems="center" justifyContent="center">
+          </DrawerBody>
+          <DrawerFooter d="flex" alignItems="center" justifyContent="center">
             <Button
               onClick={saveTask}
               leftIcon={<CheckIcon />}
@@ -357,9 +451,9 @@ const Tasks = () => {
               icon={<DeleteIcon />}
               onClick={() => deleteTaskHandler(task)}
             />
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };

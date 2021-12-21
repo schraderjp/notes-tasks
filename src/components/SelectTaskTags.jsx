@@ -145,7 +145,7 @@ const SelectTaskTags = ({ task, tasks, setTask, user }) => {
           value.map((item) => (
             <Tag
               size="md"
-              key={item.id}
+              key={item.value}
               borderRadius="full"
               colorScheme="blue"
               m="1"
