@@ -116,7 +116,7 @@ const Tasks = () => {
   };
 
   const updateTaskStatus = async (taskId) => {
-    const currentTasks = tasks;
+    const currentTasks = allTasks;
     const taskIndex = currentTasks.findIndex((item) => item.id == taskId);
     currentTasks[taskIndex].completed = !currentTasks[taskIndex].completed;
     await updateDoc(doc(db, 'users', user.uid), {
@@ -125,7 +125,7 @@ const Tasks = () => {
   };
 
   const updateTask = async (taskId) => {
-    const currentTasks = tasks;
+    const currentTasks = allTasks;
     const taskIndex = currentTasks.findIndex((item) => item.id == taskId);
     const updatedTask = {
       id: taskId,
