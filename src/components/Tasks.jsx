@@ -119,6 +119,7 @@ const Tasks = () => {
     const currentTasks = allTasks;
     const taskIndex = currentTasks.findIndex((item) => item.id == taskId);
     currentTasks[taskIndex].completed = !currentTasks[taskIndex].completed;
+    currentTasks[taskIndex].shown = showCompleted;
     await updateDoc(doc(db, 'users', user.uid), {
       tasks: currentTasks,
     });
