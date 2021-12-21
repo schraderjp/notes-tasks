@@ -23,8 +23,9 @@ const customStyles = {
     background: state.selectProps.bgColor,
     display: 'flex',
     outline: 'none',
-    border: 'none',
+    border: '1px solid rgba(255, 255, 255, 0.16)',
     boxShadow: 'none',
+    marginTop: '0.5rem',
     width: '100%',
   }),
   placeholder: (provided, state) => ({
@@ -38,6 +39,7 @@ const customStyles = {
   container: (provided, state) => ({
     ...provided,
     flex: '1 1 auto',
+    width: '100%',
   }),
   menu: (provided, state) => ({
     ...provided,
@@ -111,8 +113,7 @@ const SelectTaskTags = ({ task, tasks, setTask, user }) => {
 
   return (
     <>
-      <Divider marginY="1" />
-      <Flex align="center" mt="2" ml="3" pr="5" w="100%">
+      <Flex flexFlow="column" align="flex-start" mt="2" ml="3" pr="5" w="100%">
         <Text mr="4" fontWeight="600">
           Tags:
         </Text>
@@ -120,13 +121,14 @@ const SelectTaskTags = ({ task, tasks, setTask, user }) => {
         <Creatable
           styles={customStyles}
           isMulti
+          menuPlacement="top"
           controlShouldRenderValue={false}
           isSearchable
           value={value}
           bgColor={colorMode === 'light' ? '#f5f6f6' : '#2D3748'}
           textColor={colorMode === 'light' ? '#2D3748' : '#CBD5E0'}
-          listBgColor={colorMode === 'light' ? '#fff' : '#2D3748'}
-          optionHoverBgColor={colorMode === 'light' ? '#E2E8F0' : '#4A5568'}
+          listBgColor={colorMode === 'light' ? '#fff' : '#232b38'}
+          optionHoverBgColor={colorMode === 'light' ? '#E2E8F0' : '#414b5c'}
           options={tagList}
           onCreateOption={handleCreate}
           onChange={handleChange}

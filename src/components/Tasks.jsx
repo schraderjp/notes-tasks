@@ -67,6 +67,8 @@ import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { FaFilter, FaTag } from 'react-icons/fa';
 import SelectTaskTags from './SelectTaskTags';
 import { BiTag } from 'react-icons/bi';
+import TaskCard from './TaskCard';
+import { useTransition, animated } from 'react-spring';
 
 const Tasks = () => {
   const initialTaskState = {
@@ -79,23 +81,32 @@ const Tasks = () => {
     shown: true,
   };
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const cardBg = useColorModeValue('#f0f0f0', '#222838');
-  const completedColor = useColorModeValue(
-    'rgb(128, 128, 128)',
-    'rgb(88,88,88'
-  );
   const [user, authLoading, authErrors] = useAuthState(auth);
-  const completedStyle = {
-    textDecoration: 'line-through',
-    textDecorationThickness: '3px',
-    color: completedColor,
-  };
   const [showCompleted, setShowCompleted] = useState(true);
   const [userTags, setUserTags] = useState(null);
   const [defaultTags, setDefaultTags] = useState([]);
   const [allTasks, setAllTasks] = useState([]);
-  const [tasks, setTasks] = useState(null);
+
+  const [tasks, setTasks] = useState([]);
   const [task, setTask] = useState(initialTaskState);
+  const transitions = useTransition(tasks, {
+    from: {
+      opacity: 0,
+      maxHeight: '10rem',
+      transition: 'max-height 0.2s',
+    },
+    enter: {
+      opacity: 1,
+      maxHeight: '10rem',
+      transition: 'max-height 0.2s',
+    },
+    leave: {
+      opacity: 0,
+      maxHeight: '0rem',
+      transition: 'max-height 0.1s',
+    },
+    keys: (item) => item.id,
+  });
   const [editMode, setEditMode] = useState(false);
   const editClickHandler = (currentTask) => {
     setEditMode(true);
@@ -190,6 +201,13 @@ const Tasks = () => {
     });
   };
 
+  const sortTasksByDate = () => {
+    const sortedTasks = tasks
+      .slice()
+      .sort((a, b) => (b.dueDate > a.dueDate ? 1 : -1));
+    console.log(sortedTasks);
+  };
+
   useEffect(() => {
     if (!user && !authLoading) {
       navigate('/');
@@ -225,7 +243,7 @@ const Tasks = () => {
   return (
     <>
       <Box pos="relative" textAlign="center">
-        {/* <Heading as="h2">Tasks</Heading> */}
+        <button onClick={sortTasksByDate}>Sort</button>
         <Flex align="center" justify="space-around" p="3">
           <Menu>
             <MenuButton as={IconButton} icon={<FaFilter />} variant="ghost" />
@@ -266,7 +284,7 @@ const Tasks = () => {
           </Button>
           <Flex align="center" ml="3">
             <Text fontSize="1rem" mb="0" mr="2">
-              Toggle Completed
+              Show Completed
             </Text>
             <Switch
               isChecked={showCompleted}
@@ -283,117 +301,13 @@ const Tasks = () => {
             </Flex>
           )}
           {tasks &&
-            tasks.map((task) => (
-              <Flex
-                cursor="pointer"
-                key={task.id}
-                flex="1"
-                h="5rem"
-                width="100%"
-                p="0"
-                bg={cardBg}
-                borderRadius={6}
-                align="center"
-                justify="space-between"
-              >
-                <Flex
-                  h="100%"
-                  alignItems="centent"
-                  justifyContent="center"
-                  pl="3"
-                  pr="3"
-                  onClick={() => {
-                    updateTaskStatus(task.id);
-                  }}
-                >
-                  <Checkbox
-                    flex="1"
-                    maxWidth="max-content"
-                    id={task.id}
-                    onChange={() => {
-                      updateTaskStatus(task.id);
-                    }}
-                    spacing="0"
-                    size="lg"
-                    flex="1"
-                    isChecked={task.completed}
-                  >
-                    <VisuallyHidden>{task.description}</VisuallyHidden>
-                  </Checkbox>
-                </Flex>
-                <Flex
-                  flexFlow="column"
-                  flex="1"
-                  p="1"
-                  onClick={() => {
-                    editClickHandler(task);
-                  }}
-                >
-                  <Flex align="center">
-                    <Text
-                      userSelect="none"
-                      pl="3"
-                      style={task.completed ? completedStyle : undefined}
-                    >
-                      {task.description}
-                    </Text>
-                  </Flex>
-
-                  <Flex>
-                    <Flex
-                      flex="1"
-                      mt="1"
-                      ml={'2'}
-                      mb="1"
-                      justifyContent="flex-start"
-                    >
-                      <Flex ml={'1'} align="center" flex="1" w="100%">
-                        {task.tags[0] && (
-                          <Flex align="center">
-                            <Icon mr="2" as={FaTag} />
-                            {task.tags.map((tag) => (
-                              <Tag
-                                size="sm"
-                                mr="1"
-                                colorScheme="blue"
-                                key={tag.value}
-                              >
-                                <TagLabel>{tag.label}</TagLabel>
-                              </Tag>
-                            ))}
-                          </Flex>
-                        )}
-                        {task.dueDate && (
-                          <>
-                            <Text pl="3" pr="3">
-                              •
-                            </Text>
-                            <Text
-                              style={
-                                task.completed ? completedStyle : undefined
-                              }
-                              userSelect="none"
-                              fontWeight="bold"
-                              color="blue.300"
-                            >
-                              Due:
-                            </Text>
-                            <Text
-                              style={
-                                task.completed ? completedStyle : undefined
-                              }
-                              userSelect="none"
-                              pl="2"
-                            >
-                              {task.dueDate}
-                            </Text>
-                          </>
-                        )}
-                      </Flex>
-                    </Flex>
-                  </Flex>
-                </Flex>
-              </Flex>
+            transitions((values, task) => (
+              <TaskCard
+                values={values}
+                task={task}
+                editClickHandler={editClickHandler}
+                updateTaskStatus={updateTaskStatus}
+              />
             ))}
         </VStack>
       </Box>

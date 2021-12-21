@@ -45,14 +45,32 @@ import { useDocument } from 'react-firebase-hooks/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { BsPrinter, BsTag, BsTags, BsThreeDotsVertical } from 'react-icons/bs';
 import ManageTags from './ManageTags';
+import Note from './Note';
+import { useTransition } from 'react-spring';
 
 const Notes = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [user, authLoading, authErrors] = useAuthState(auth);
   const printRef = useRef();
-  const [notes, setNotes] = useState(null);
-  const cardBg = useColorModeValue('#f0f0f0', '#222838');
-  const tagIconColor = useColorModeValue('blue.500', 'blue.300');
+  const [notes, setNotes] = useState([]);
+  const transitions = useTransition(notes, {
+    from: {
+      opacity: 0,
+      maxHeight: '10rem',
+      transition: 'max-height 0.2s',
+    },
+    enter: {
+      opacity: 1,
+      maxHeight: '10rem',
+      transition: 'max-height 0.2s',
+    },
+    leave: {
+      opacity: 0,
+      maxHeight: '0rem',
+      transition: 'max-height 0.1s',
+    },
+    keys: (item) => item.id,
+  });
 
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
@@ -142,75 +160,13 @@ const Notes = () => {
         </Flex>
       )}
       {notes &&
-        notes.map((note) => (
-          <LinkBox key={note.id}>
-            <Box
-              boxShadow="md"
-              bg={cardBg}
-              p="3"
-              mb="3"
-              marginInline="4"
-              borderRadius="6"
-            >
-              <Flex mb="2" align="center" justify="space-between">
-                <Text fontFamily="Inter" fontSize={['1rem', '1.2rem']}>
-                  <LinkOverlay as={Link} to={`/notes/view/${note.id}`}>
-                    {note.title !== '' ? note.title : 'Untitled Note'}
-                  </LinkOverlay>
-                </Text>
-                <Menu>
-                  <MenuButton
-                    mr="2"
-                    variant="ghost"
-                    as={IconButton}
-                    icon={<BsThreeDotsVertical />}
-                  />
-                  <MenuList minW="max-content">
-                    <MenuItem
-                      as={Link}
-                      to={`/notes/${note.id}`}
-                      icon={<EditIcon />}
-                    >
-                      Edit
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => {
-                        const titleToPrint = `<h1>${note.title}</h1>`;
-                        const contentToPrint = titleToPrint + note.content;
-                        handlePrintClick(contentToPrint);
-                      }}
-                      icon={<BsPrinter />}
-                    >
-                      Print
-                    </MenuItem>
-                    <MenuItem
-                      icon={<DeleteIcon />}
-                      onClick={() => deleteNote(note.id)}
-                    >
-                      Delete
-                    </MenuItem>
-                  </MenuList>
-                </Menu>
-              </Flex>
-              <Flex align="center" justify="flex-start">
-                <Flex align="flex-start" justify="flex-start">
-                  <Icon
-                    mr="2"
-                    fontSize="1.2rem"
-                    color={tagIconColor}
-                    as={BsTag}
-                  />
-                </Flex>
-                <Flex align="flex-start" justify="flex-start" flexWrap="wrap">
-                  {note.tags.map((tag) => (
-                    <Tag colorScheme="blue" mr="2">
-                      <TagLabel>{tag.label}</TagLabel>
-                    </Tag>
-                  ))}
-                </Flex>
-              </Flex>
-            </Box>
-          </LinkBox>
+        transitions((values, note) => (
+          <Note
+            note={note}
+            values={values}
+            deleteNote={deleteNote}
+            handlePrintClick={handlePrintClick}
+          />
         ))}
 
       <div style={{ display: 'none' }}>
