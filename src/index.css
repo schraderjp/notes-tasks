@@ -92,6 +92,7 @@
 
 .ProseMirror {
   position: relative;
+  padding: 0.25rem 1rem;
 }
 
 .ProseMirror {
@@ -208,13 +209,81 @@ ul[data-type='taskList'] li[data-checked='true'] p {
   pointer-events: auto;
 }
 
-@media print {
-  body {
-    background: #fff;
-  }
-  .ProseMirror {
-    overflow-x: none;
-  }
+.note-view h1 {
+  padding: 0.5rem 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.note-view h2 {
+  padding: 0.5rem 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+.note-view h3 {
+  padding: 0.5rem 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.note-view input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+}
+
+.note-view input[type='checkbox']::before {
+  content: '';
+  display: inline-block;
+  border: 1px solid white;
+  width: 1.1rem;
+  height: 1.1rem;
+  background: #fff;
+  border-radius: 3px;
+  position: relative;
+}
+
+.note-view input[type='checkbox']:checked::after {
+  content: '';
+  display: inline-block;
+  height: 1rem;
+  width: 0.4rem;
+  border-right: 3px solid blue;
+  border-bottom: 3px solid blue;
+  transform: rotate(45deg);
+  position: absolute;
+  left: 0.35rem;
+  top: 0.05rem;
+}
+
+ul[data-type='taskList'] li input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+}
+
+ul[data-type='taskList'] li input[type='checkbox']::before {
+  content: '';
+  display: inline-block;
+  border: 1px solid white;
+  width: 1.1rem;
+  height: 1.1rem;
+  background: #fff;
+  border-radius: 3px;
+  position: relative;
+}
+
+ul[data-type='taskList'] li input[type='checkbox']:checked::after {
+  content: '';
+  display: inline-block;
+  height: 1rem;
+  width: 0.4rem;
+  border-right: 3px solid blue;
+  border-bottom: 3px solid blue;
+  transform: rotate(45deg);
+  position: absolute;
+  left: 0.35rem;
+  top: 0.05rem;
 }
 
 @page {
@@ -228,5 +297,10 @@ ul[data-type='taskList'] li[data-checked='true'] p {
     height: initial !important;
     overflow: initial !important;
     -webkit-print-color-adjust: exact;
+    background: #fff;
+  }
+  .ProseMirror {
+    overflow-x: none;
+    background: #fff;
   }
 }

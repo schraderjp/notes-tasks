@@ -11,19 +11,31 @@ import {
 import React from 'react';
 import { FaTag } from 'react-icons/fa';
 import { animated } from 'react-spring';
+import { isBefore, parseISO } from 'date-fns';
 
 const AnimatedFlex = animated(Flex);
 
 const TaskCard = ({ task, updateTaskStatus, editClickHandler, values }) => {
-  const cardBg = useColorModeValue('#f0f0f0', '#222838');
+  const cardBg = useColorModeValue('#e5eef8', '#222838');
   const completedColor = useColorModeValue(
     'rgb(128, 128, 128)',
     'rgb(88,88,88'
   );
+  const dateTextColor = useColorModeValue('gray.900', '#fff');
   const completedStyle = {
     textDecoration: 'line-through',
     textDecorationThickness: '3px',
     color: completedColor,
+  };
+
+  const compareDate = (color) => {
+    const date = parseISO(task.dueDate);
+    const today = new Date();
+    if (isBefore(date, today)) {
+      return 'red.300';
+    } else {
+      return color;
+    }
   };
 
   if (!task)
@@ -101,16 +113,18 @@ const TaskCard = ({ task, updateTaskStatus, editClickHandler, values }) => {
                   ))}
                 </Flex>
               )}
+              {task.dueDate && task.tags[0] && (
+                <Text pl="3" pr="3">
+                  •
+                </Text>
+              )}
               {task.dueDate && (
                 <>
-                  <Text pl="3" pr="3">
-                    •
-                  </Text>
                   <Text
                     style={task.completed ? completedStyle : undefined}
                     userSelect="none"
                     fontWeight="bold"
-                    color="blue.300"
+                    color={compareDate('blue.300')}
                   >
                     Due:
                   </Text>
@@ -118,6 +132,7 @@ const TaskCard = ({ task, updateTaskStatus, editClickHandler, values }) => {
                     style={task.completed ? completedStyle : undefined}
                     userSelect="none"
                     pl="2"
+                    color={compareDate(dateTextColor)}
                   >
                     {task.dueDate}
                   </Text>

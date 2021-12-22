@@ -20,6 +20,7 @@ import {
   Input,
   Menu,
   MenuButton,
+  MenuDivider,
   MenuItem,
   MenuItemOption,
   MenuList,
@@ -88,8 +89,27 @@ const Tasks = () => {
   const [allTasks, setAllTasks] = useState([]);
 
   const [tasks, setTasks] = useState([]);
+  const [unDatedTasks, setUndatedTasks] = useState([]);
   const [task, setTask] = useState(initialTaskState);
   const transitions = useTransition(tasks, {
+    from: {
+      opacity: 0,
+      maxHeight: '10rem',
+      transition: 'max-height 0.2s',
+    },
+    enter: {
+      opacity: 1,
+      maxHeight: '10rem',
+      transition: 'max-height 0.2s',
+    },
+    leave: {
+      opacity: 0,
+      maxHeight: '0rem',
+      transition: 'max-height 0.1s',
+    },
+    keys: (item) => item.id,
+  });
+  const undatedTransitions = useTransition(unDatedTasks, {
     from: {
       opacity: 0,
       maxHeight: '10rem',
@@ -201,11 +221,18 @@ const Tasks = () => {
     });
   };
 
-  const sortTasksByDate = () => {
-    const sortedTasks = tasks
-      .slice()
-      .sort((a, b) => (b.dueDate > a.dueDate ? 1 : -1));
-    console.log(sortedTasks);
+  const handleSortClick = (value) => {
+    let sortedTasks;
+    if (value === 'newest') {
+      sortedTasks = tasks
+        .slice()
+        .sort((a, b) => (b.dueDate > a.dueDate ? 1 : -1));
+    } else if (value === 'oldest') {
+      sortedTasks = tasks
+        .slice()
+        .sort((a, b) => (b.dueDate < a.dueDate ? 1 : -1));
+    }
+    setTasks(sortedTasks);
   };
 
   useEffect(() => {
@@ -220,9 +247,19 @@ const Tasks = () => {
       const tagsFromDb = doc.data().userTags;
       setUserTags(tagsFromDb);
       setAllTasks(tasksList);
+      let sortedTasks = tasksList
+        .slice()
+        .sort((a, b) => (b.dueDate < a.dueDate ? 1 : -1));
       setTasks(
+        sortedTasks.filter((task) => {
+          if (task.shown && task.dueDate !== '') {
+            return task;
+          }
+        })
+      );
+      setUndatedTasks(
         tasksList.filter((task) => {
-          if (task.shown) {
+          if (task.shown && task.dueDate === '') {
             return task;
           }
         })
@@ -243,11 +280,20 @@ const Tasks = () => {
   return (
     <>
       <Box pos="relative" textAlign="center">
-        <button onClick={sortTasksByDate}>Sort</button>
         <Flex align="center" justify="space-around" p="3">
           <Menu>
             <MenuButton as={IconButton} icon={<FaFilter />} variant="ghost" />
             <MenuList minWidth="max-content">
+              <MenuOptionGroup
+                onChange={(value) => handleSortClick(value)}
+                title="Sort"
+                type="radio"
+                defaultValue="oldest"
+              >
+                <MenuItemOption value="newest">By Newest</MenuItemOption>
+                <MenuItemOption value="oldest">By Oldest</MenuItemOption>
+              </MenuOptionGroup>
+              <MenuDivider />
               {userTags && (
                 <MenuOptionGroup
                   onChange={(value) => handleTagFilter(value)}
@@ -302,6 +348,27 @@ const Tasks = () => {
           )}
           {tasks &&
             transitions((values, task) => (
+              <TaskCard
+                values={values}
+                task={task}
+                editClickHandler={editClickHandler}
+                updateTaskStatus={updateTaskStatus}
+              />
+            ))}
+        </VStack>
+        {unDatedTasks[0] && (
+          <Heading as="h3" fontSize="1rem">
+            No Due Date
+          </Heading>
+        )}
+        <VStack p="3">
+          {!unDatedTasks && (
+            <Flex mt="3" align="center" justify="center">
+              <Spinner />
+            </Flex>
+          )}
+          {unDatedTasks &&
+            undatedTransitions((values, task) => (
               <TaskCard
                 values={values}
                 task={task}

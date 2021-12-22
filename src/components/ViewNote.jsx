@@ -116,9 +116,11 @@ const ViewNote = () => {
       {note && (
         <>
           <Flex justify="center" mb="3" align="center">
-            <Icon color={tagIconColor} mr="2" fontSize="1.4rem">
-              <BsTag />
-            </Icon>
+            {note.tags[0] && (
+              <Icon color={tagIconColor} mr="2" fontSize="1.4rem">
+                <BsTag />
+              </Icon>
+            )}
             {note.tags.map((tag) => (
               <Tag colorScheme="blue" mr="1" ml="1">
                 <TagLabel>{tag.label}</TagLabel>
@@ -128,6 +130,7 @@ const ViewNote = () => {
           <Box
             ml="8"
             mr="8"
+            className="note-view"
             style={{ pointerEvents: 'none' }}
             dangerouslySetInnerHTML={{
               __html: note.content,
@@ -135,7 +138,7 @@ const ViewNote = () => {
           />
         </>
       )}
-      <div style={{ display: 'none' }}>
+      <div style={{ display: 'none', background: '#fff' }}>
         <PrintComponent ref={printRef} />
       </div>
     </>

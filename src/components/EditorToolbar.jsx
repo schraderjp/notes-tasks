@@ -15,7 +15,8 @@ import {
   BsHr,
   BsListCheck,
   BsTable,
-  BsAlignStart,
+  BsTextIndentLeft,
+  BsTextIndentRight,
 } from 'react-icons/bs';
 import {
   BiAlignJustify,
@@ -191,6 +192,42 @@ const EditorToolbar = ({ editor }) => {
           onClick={() => editor.chain().focus().toggleTaskList().run()}
           isActive={editor.isActive('taskList')}
           icon={<BsListCheck size={22} />}
+        />
+      </Tooltip>
+      <Tooltip label="Sink List Item">
+        <ToolbarButton
+          bg="transparent"
+          size="sm"
+          onClick={() => {
+            if (editor.can().sinkListItem('taskItem')) {
+              editor.chain().focus().sinkListItem('taskItem').run();
+            } else if (editor.can().sinkListItem('listItem')) {
+              editor.chain().focus().sinkListItem('listItem').run();
+            }
+          }}
+          disabled={
+            !editor.can().sinkListItem('taskItem') &&
+            !editor.can().sinkListItem('listItem')
+          }
+          icon={<BsTextIndentLeft size={22} />}
+        />
+      </Tooltip>
+      <Tooltip label="Lift List Item">
+        <ToolbarButton
+          bg="transparent"
+          size="sm"
+          onClick={() => {
+            if (editor.can().liftListItem('taskItem')) {
+              editor.chain().focus().liftListItem('taskItem').run();
+            } else if (editor.can().liftListItem('listItem')) {
+              editor.chain().focus().liftListItem('listItem').run();
+            }
+          }}
+          disabled={
+            !editor.can().liftListItem('taskItem') &&
+            !editor.can().liftListItem('listItem')
+          }
+          icon={<BsTextIndentRight size={22} />}
         />
       </Tooltip>
       <Tooltip label="Code Block">

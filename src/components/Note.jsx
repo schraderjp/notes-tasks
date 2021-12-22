@@ -38,7 +38,9 @@ const Note = ({ values, note, deleteNote, handlePrintClick }) => {
       <Box
         boxShadow="md"
         bg={cardBg}
-        p="3"
+        pl="3"
+        pt="1"
+        pb="3"
         mb="3"
         marginInline="4"
         borderRadius="6"

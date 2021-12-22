@@ -62,34 +62,37 @@ const Header = () => {
         justifyContent={`${user ? 'space-between' : 'flex-end'}`}
       >
         {user && (
-          <LinkBox>
-            <LinkOverlay as={Link} to="/">
-              <Image width="3rem" src="/favicon.svg" alt="Cartoon notebook" />
-            </LinkOverlay>
-          </LinkBox>
+          <>
+            <LinkBox>
+              <LinkOverlay as={Link} to="/">
+                <Image width="3rem" src="/favicon.svg" alt="Cartoon notebook" />
+              </LinkOverlay>
+            </LinkBox>
+
+            <Flex pt="2">
+              <Button
+                as={NavLink}
+                to="/notes"
+                marginInline="2"
+                size="md"
+                colorScheme="blue"
+                variant={({ isActive }) => (isActive ? 'filled' : 'ghost')}
+              >
+                Notes
+              </Button>
+              <Button
+                variant={({ isActive }) => (isActive ? 'filled' : 'ghost')}
+                marginInline="2"
+                as={NavLink}
+                to="/tasks"
+                size="md"
+                colorScheme="blue"
+              >
+                Tasks
+              </Button>
+            </Flex>
+          </>
         )}
-        <Flex pt="2">
-          <Button
-            as={NavLink}
-            to="/notes"
-            marginInline="2"
-            size="md"
-            colorScheme="blue"
-            variant={({ isActive }) => (isActive ? 'filled' : 'ghost')}
-          >
-            Notes
-          </Button>
-          <Button
-            variant={({ isActive }) => (isActive ? 'filled' : 'ghost')}
-            marginInline="2"
-            as={NavLink}
-            to="/tasks"
-            size="md"
-            colorScheme="blue"
-          >
-            Tasks
-          </Button>
-        </Flex>
         <Flex align="center" pr="4" pt="2">
           <Tooltip
             placement="start"
