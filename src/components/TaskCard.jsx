@@ -76,7 +76,6 @@ const TaskCard = ({ task, updateTaskStatus, editClickHandler, values }) => {
           }}
           spacing="0"
           size="lg"
-          flex="1"
           isChecked={task.completed}
         >
           <VisuallyHidden>{task.description}</VisuallyHidden>

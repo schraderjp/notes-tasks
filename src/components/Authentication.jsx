@@ -12,6 +12,7 @@ import {
   useDisclosure,
   Spinner,
   Heading,
+  Image,
 } from '@chakra-ui/react';
 import LogInForm from './LogInForm';
 import SignUpForm from './SignUpForm';
@@ -59,6 +60,7 @@ const Authentication = () => {
         >
           Notes and Tasks
         </Heading>
+        <Image pt="1" pb="3" src="/favicon.svg" alt="picture of notebook" />
         <Button size="lg" onClick={openSignUpForm} colorScheme="blue" m="3">
           Sign Up
         </Button>

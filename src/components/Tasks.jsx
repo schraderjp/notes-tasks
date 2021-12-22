@@ -87,10 +87,10 @@ const Tasks = () => {
   const [userTags, setUserTags] = useState(null);
   const [defaultTags, setDefaultTags] = useState([]);
   const [allTasks, setAllTasks] = useState([]);
-
   const [tasks, setTasks] = useState([]);
   const [unDatedTasks, setUndatedTasks] = useState([]);
   const [task, setTask] = useState(initialTaskState);
+  const [sort, setSort] = useState('oldest');
   const transitions = useTransition(tasks, {
     from: {
       opacity: 0,
@@ -128,6 +128,19 @@ const Tasks = () => {
     keys: (item) => item.id,
   });
   const [editMode, setEditMode] = useState(false);
+  const handleSortClick = () => {
+    let sortedTasks;
+    if (sort === 'newest') {
+      sortedTasks = tasks
+        .slice()
+        .sort((a, b) => (b.dueDate > a.dueDate ? 1 : -1));
+    } else if (sort === 'oldest') {
+      sortedTasks = tasks
+        .slice()
+        .sort((a, b) => (b.dueDate < a.dueDate ? 1 : -1));
+    }
+    setTasks(sortedTasks);
+  };
   const editClickHandler = (currentTask) => {
     setEditMode(true);
     setTask(currentTask);
@@ -143,6 +156,7 @@ const Tasks = () => {
     await updateDoc(doc(db, 'users', user.uid), {
       tasks: arrayUnion({ ...task, id: newId }),
     });
+    console.log(sort);
     closeModal();
   };
 
@@ -221,20 +235,6 @@ const Tasks = () => {
     });
   };
 
-  const handleSortClick = (value) => {
-    let sortedTasks;
-    if (value === 'newest') {
-      sortedTasks = tasks
-        .slice()
-        .sort((a, b) => (b.dueDate > a.dueDate ? 1 : -1));
-    } else if (value === 'oldest') {
-      sortedTasks = tasks
-        .slice()
-        .sort((a, b) => (b.dueDate < a.dueDate ? 1 : -1));
-    }
-    setTasks(sortedTasks);
-  };
-
   useEffect(() => {
     if (!user && !authLoading) {
       navigate('/');
@@ -247,16 +247,32 @@ const Tasks = () => {
       const tagsFromDb = doc.data().userTags;
       setUserTags(tagsFromDb);
       setAllTasks(tasksList);
-      let sortedTasks = tasksList
-        .slice()
-        .sort((a, b) => (b.dueDate < a.dueDate ? 1 : -1));
-      setTasks(
-        sortedTasks.filter((task) => {
-          if (task.shown && task.dueDate !== '') {
-            return task;
-          }
-        })
-      );
+      console.log(sort);
+      let sortedTasks;
+      if (sort === 'oldest') {
+        sortedTasks = tasksList
+          .slice()
+          .sort((a, b) => (b.dueDate < a.dueDate ? 1 : -1));
+        setTasks(
+          sortedTasks.filter((task) => {
+            if (task.shown && task.dueDate !== '') {
+              return task;
+            }
+          })
+        );
+      } else if (sort === 'newest') {
+        sortedTasks = tasksList
+          .slice()
+          .sort((a, b) => (b.dueDate > a.dueDate ? 1 : -1));
+        setTasks(
+          sortedTasks.filter((task) => {
+            if (task.shown && task.dueDate !== '') {
+              return task;
+            }
+          })
+        );
+      }
+
       setUndatedTasks(
         tasksList.filter((task) => {
           if (task.shown && task.dueDate === '') {
@@ -268,7 +284,7 @@ const Tasks = () => {
     return () => {
       unsub();
     };
-  }, [user, showCompleted, authLoading]);
+  }, [user, showCompleted, authLoading, sort]);
 
   if (!user && authLoading)
     return (
@@ -285,10 +301,11 @@ const Tasks = () => {
             <MenuButton as={IconButton} icon={<FaFilter />} variant="ghost" />
             <MenuList minWidth="max-content">
               <MenuOptionGroup
-                onChange={(value) => handleSortClick(value)}
+                onChange={setSort}
                 title="Sort"
                 type="radio"
                 defaultValue="oldest"
+                value={sort}
               >
                 <MenuItemOption value="newest">By Newest</MenuItemOption>
                 <MenuItemOption value="oldest">By Oldest</MenuItemOption>

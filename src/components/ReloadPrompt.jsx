@@ -57,6 +57,7 @@ function ReloadPrompt() {
           flexFlow="column"
           alignItems="center"
           justifyContent="center"
+          opacity="1"
         >
           <AlertIcon />
           <AlertDescription p="2">
