@@ -16,12 +16,14 @@ import {
 } from '@chakra-ui/react';
 import LogInForm from './LogInForm';
 import SignUpForm from './SignUpForm';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import { useAuthState, useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import { auth } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 
 const Authentication = () => {
   const navigate = useNavigate();
+  const [signInWithEmailAndPassword] =
+    useSignInWithEmailAndPassword(auth);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [user, authLoading, authError] = useAuthState(auth);
   const [formType, setFormType] = useState(null);
@@ -72,6 +74,15 @@ const Authentication = () => {
           m="3"
         >
           Log In
+        </Button>
+        <Button
+          size="lg"
+          onClick={()=> signInWithEmailAndPassword('email@example.com', 'password')}
+          variant="outline"
+          colorScheme="green"
+          m="3"
+        >
+          Demo
         </Button>
       </Flex>
       <Modal isOpen={isOpen} onClose={onClose}>
