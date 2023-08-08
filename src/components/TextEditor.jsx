@@ -38,6 +38,7 @@ const StyledEditor = styled(EditorContent)`
   padding: 0.5rem;
   margin-top: 0.5rem;
   border-radius: 6px;
+  min-height: 20rem;
 `;
 
 const TextEditor = () => {
